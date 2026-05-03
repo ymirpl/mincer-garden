@@ -1,0 +1,11 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ListIndex from '../../components/ListIndex.astro';
+import { getItemsByType } from '../../lib/content';
+
+const items = await getItemsByType('note');
+---
+
+<BaseLayout title="notes list" view="list">
+  <ListIndex items={items} heading="notes" />
+</BaseLayout>

@@ -1,0 +1,13 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Mosaic from '../../components/Mosaic.astro';
+import { getGardenItems, getItemsByType, getTagCounts, interleaveItems } from '../../lib/content';
+
+const allItems = await getGardenItems();
+const items = interleaveItems(await getItemsByType('product'));
+const tags = getTagCounts(allItems);
+---
+
+<BaseLayout title="products">
+  <Mosaic items={items} currentType="products" tags={tags} />
+</BaseLayout>

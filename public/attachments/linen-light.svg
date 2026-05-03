@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 960" role="img" aria-label="late afternoon light through linen">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f0d7a7"/>
+      <stop offset=".55" stop-color="#b4a07d"/>
+      <stop offset="1" stop-color="#6f6855"/>
+    </linearGradient>
+  </defs>
+  <rect width="720" height="960" fill="url(#g)"/>
+  <path d="M95 0c44 197 35 408 8 960M233 0c16 180 12 554-13 960M390 0c-22 222-5 539 28 960M571 0c-42 245-38 550 6 960" stroke="#fff3dc" stroke-width="16" opacity=".24"/>
+  <path d="M0 640c180-64 399-86 720-52v372H0Z" fill="#4d4639" opacity=".28"/>
+  <circle cx="164" cy="214" r="116" fill="#fff2bd" opacity=".25"/>
+</svg>

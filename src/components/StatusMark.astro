@@ -1,0 +1,29 @@
+---
+interface Props {
+  status?: 'seedling' | 'budding' | 'evergreen';
+}
+
+const { status = 'seedling' } = Astro.props;
+---
+
+<span class:list={['status-mark', status]} aria-hidden="true">
+  {status === 'seedling' && (
+    <svg viewBox="0 0 12 12" fill="none">
+      <path d="M6 10 L6 5" />
+      <path d="M6 6 C4 5 3 6 3 8" />
+      <path d="M6 6 C8 5 9 6 9 8" />
+    </svg>
+  )}
+  {status === 'budding' && (
+    <svg viewBox="0 0 12 12" fill="none">
+      <path d="M2 10 C4 7 7 5 10 5" />
+      <ellipse cx="9.5" cy="4.6" rx="1.6" ry="1" />
+    </svg>
+  )}
+  {status === 'evergreen' && (
+    <svg viewBox="0 0 12 12" fill="none">
+      <path d="M2 10 C3 7 5 5 8 4 C10 7 8 10 5 10 Z" />
+      <path d="M6 10 L6 6" />
+    </svg>
+  )}
+</span>

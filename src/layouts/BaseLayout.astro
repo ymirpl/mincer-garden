@@ -1,0 +1,50 @@
+---
+import Header from '../components/Header.astro';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  view?: 'mosaic' | 'list' | 'note';
+  bodyClass?: string;
+}
+
+const {
+  title = 'garden.mincer',
+  description = 'a public digital garden tended in markdown',
+  view = 'mosaic',
+  bodyClass = ''
+} = Astro.props;
+const pageTitle = title === 'garden.mincer' ? title : `${title} · garden.mincer`;
+const skipTarget = view === 'mosaic' ? '#mosaic' : '#content';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta name="theme-color" content="#faf7f2" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class:list={[`view-${view}`, bodyClass]} data-view={view === 'list' ? 'list' : 'mosaic'}>
+    <a href={skipTarget} class="skip-link">skip to content</a>
+    <div class="stage">
+      <Header view={view} />
+      <slot />
+      <footer class="colophon">
+        <div>tended in markdown · <a href="/feed.xml">rss</a> · <a href="/feed.notes.xml">notes rss</a></div>
+        <div>root notes folder · zero-js pages · warm-paper v0.1</div>
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,51 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import StatusMark from '../components/StatusMark.astro';
+import type { GardenItem } from '../lib/content';
+import { formatLongDate, itemDate, noteLayout } from '../lib/content';
+
+interface Props {
+  item: GardenItem;
+}
+
+const { item } = Astro.props;
+const layout = noteLayout(item);
+const isNote = item.type === 'note';
+---
+
+<BaseLayout title={item.title} description={item.excerpt} view="note" bodyClass={`prose-page ${layout}`}>
+  <main class="note-shell" id="content">
+    {isNote && (
+      <aside class="note-meta" aria-label="note metadata">
+        <div class:list={['status', item.status]}>
+          <StatusMark status={item.status} />
+          {item.status}
+        </div>
+        <p>planted {formatLongDate(item.created)}</p>
+        <p>tended {formatLongDate(itemDate(item))}</p>
+        {item.tags.length > 0 && <p>{item.tags.join(' · ')}</p>}
+      </aside>
+    )}
+    <article class:list={['prose', layout]}>
+      {isNote && layout === 'long' ? (
+        <header class="note-title">
+          <div class:list={['status inline', item.status]}>
+            <StatusMark status={item.status} />
+            {item.status}
+          </div>
+          <h1>{item.title}</h1>
+          {'subtitle' in item.entry.data && item.entry.data.subtitle && <p>{item.entry.data.subtitle}</p>}
+        </header>
+      ) : (
+        <header class="fragment-title">
+          <h1>{item.title}</h1>
+        </header>
+      )}
+      <slot />
+      <footer class="prose-foot">
+        tended {formatLongDate(itemDate(item))}
+        {isNote && item.status ? ` · ${item.status}` : ''}
+      </footer>
+    </article>
+  </main>
+</BaseLayout>

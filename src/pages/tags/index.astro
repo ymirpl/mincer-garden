@@ -1,0 +1,17 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getGardenItems, getTagCounts } from '../../lib/content';
+
+const tags = getTagCounts(await getGardenItems());
+---
+
+<BaseLayout title="tags" view="note">
+  <main class="about" id="content">
+    <h1>tags</h1>
+    <div class="tag-cloud">
+      {tags.map(({ tag, count }) => (
+        <a href={`/tags/${tag}`}>{tag} · {count}</a>
+      ))}
+    </div>
+  </main>
+</BaseLayout>

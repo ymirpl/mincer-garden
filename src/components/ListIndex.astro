@@ -1,0 +1,31 @@
+---
+import type { GardenItem } from '../lib/content';
+import { formatMonthDay, groupByYear, itemDate } from '../lib/content';
+
+interface Props {
+  items: GardenItem[];
+  heading?: string;
+}
+
+const { items, heading } = Astro.props;
+const groups = groupByYear(items);
+const years = Object.keys(groups).sort((a, b) => Number(b) - Number(a));
+---
+
+<main class="listroot" id="content">
+  {heading && <h1>{heading}</h1>}
+  {items.length === 0 && <p class="empty">the garden is just dirt for now</p>}
+  {years.map((year) => (
+    <section aria-labelledby={`year-${year}`}>
+      <h2 class="year" id={`year-${year}`}>{year}</h2>
+      {groups[year].map((item) => (
+        <div class="row">
+          <a href={item.url}>
+            {item.type === 'link' ? `${item.title} (${item.domain})` : item.title}
+          </a>
+          <span class="d">{formatMonthDay(itemDate(item))}</span>
+        </div>
+      ))}
+    </section>
+  ))}
+</main>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 900" role="img" aria-label="a matte ceramic mug on green paper">
+  <rect width="900" height="900" fill="#dde3d7"/>
+  <ellipse cx="430" cy="690" rx="230" ry="42" fill="#8f9b8b" opacity=".32"/>
+  <path d="M260 300h310l-36 340c-4 44-38 76-82 76H378c-44 0-78-32-82-76L260 300Z" fill="#f0ede4" stroke="#8b877c" stroke-width="10"/>
+  <ellipse cx="415" cy="300" rx="156" ry="42" fill="#f8f4eb" stroke="#8b877c" stroke-width="10"/>
+  <path d="M560 388c84-6 126 32 116 91-10 58-56 92-124 86" fill="none" stroke="#8b877c" stroke-width="32" stroke-linecap="round"/>
+  <path d="M319 373c58 22 125 26 197 0" stroke="#c9c2b4" stroke-width="8" fill="none" stroke-linecap="round"/>
+</svg>

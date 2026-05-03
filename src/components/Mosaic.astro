@@ -1,0 +1,77 @@
+---
+import type { GardenItem } from '../lib/content';
+import MosaicTile from './MosaicTile.astro';
+
+interface Props {
+  items: GardenItem[];
+  currentType?: string;
+  currentTag?: string;
+  tags?: { tag: string; count: number }[];
+}
+
+const { items, currentType = 'all', currentTag, tags = [] } = Astro.props;
+const types = ['all', 'notes', 'tweets', 'links', 'products', 'images'];
+---
+
+<section class="intro" aria-label="about this garden">
+  <div class="now">
+    a small wall of <em>fragments</em>, links, products, images and notes
+  </div>
+  <div class="meta">tended in markdown · {items.length} fragments</div>
+</section>
+
+<section class="filters" aria-label="garden filters">
+  <div class="group">
+    <span class="label">type</span>
+    {types.map((type) => (
+      <a href={type === 'all' ? '/' : `/${type}`} class:list={{ on: currentType === type }}>
+        {type}
+      </a>
+    ))}
+  </div>
+  {tags.length > 0 && (
+    <>
+      <span class="dot" aria-hidden="true">·</span>
+      <div class="group">
+        <span class="label">tag</span>
+        {tags.slice(0, 6).map(({ tag }) => (
+          <a href={`/tags/${tag}`} class:list={{ on: currentTag === tag }}>{tag}</a>
+        ))}
+      </div>
+    </>
+  )}
+  <span class="dot" aria-hidden="true">·</span>
+  <div class="group">
+    <span class="label">growth</span>
+    <a href="/tags/seedling">
+      <svg class="glyph" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+        <path d="M6 10 L 6 5" stroke="#C2604A" stroke-width="0.9" stroke-linecap="round"></path>
+        <path d="M6 6 C 4 5, 3 6, 3 8" stroke="#C2604A" stroke-width="0.8" fill="none"></path>
+        <path d="M6 6 C 8 5, 9 6, 9 8" stroke="#C2604A" stroke-width="0.8" fill="none"></path>
+      </svg>
+      seedling
+    </a>
+    <a href="/tags/budding">
+      <svg class="glyph" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+        <path d="M2 10 C 4 7, 7 5, 10 5" stroke="#C2604A" stroke-width="0.9" fill="none"></path>
+        <ellipse cx="9.5" cy="4.6" rx="1.6" ry="1" stroke="#C2604A" stroke-width="0.7" fill="rgba(194,96,74,0.18)"></ellipse>
+      </svg>
+      budding
+    </a>
+    <a href="/tags/evergreen">
+      <svg class="glyph" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+        <path d="M2 10 C 3 7, 5 5, 8 4 C 10 7, 8 10, 5 10 Z" stroke="#6B8F71" stroke-width="0.8" fill="rgba(107,143,113,0.25)"></path>
+        <path d="M6 10 L 6 6" stroke="#6B8F71" stroke-width="0.7"></path>
+      </svg>
+      evergreen
+    </a>
+  </div>
+</section>
+
+<main class="mosaic" id="mosaic">
+  {items.length > 0 ? (
+    items.map((item) => <MosaicTile item={item} />)
+  ) : (
+    <p class="empty">the garden is just dirt for now</p>
+  )}
+</main>

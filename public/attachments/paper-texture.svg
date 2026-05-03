@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 900" role="img" aria-label="warm paper texture">
+  <filter id="n">
+    <feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="4" stitchTiles="stitch"/>
+    <feColorMatrix values="0 0 0 0 .55 0 0 0 0 .46 0 0 0 0 .32 0 0 0 .42 0"/>
+  </filter>
+  <rect width="900" height="900" fill="#efe3cb"/>
+  <rect width="900" height="900" filter="url(#n)" opacity=".32"/>
+  <path d="M92 128c171 34 327 18 688 47M74 342c219-35 432 26 746 2M122 712c215 38 444-5 664 37" stroke="#b49a70" stroke-width="3" opacity=".18" fill="none"/>
+</svg>

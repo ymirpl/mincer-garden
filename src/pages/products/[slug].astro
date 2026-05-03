@@ -1,0 +1,19 @@
+---
+import { render } from 'astro:content';
+import ProseLayout from '../../layouts/ProseLayout.astro';
+import { getItemsByType } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const items = await getItemsByType('product');
+  return items.map((item) => ({ params: { slug: item.slug }, props: { item } }));
+}
+
+const { item } = Astro.props;
+const { Content } = await render(item.entry);
+---
+
+<ProseLayout item={item}>
+  {item.image && <p><img src={item.image} alt={item.alt ?? item.title} /></p>}
+  {item.externalUrl && <p><a href={item.externalUrl}>external link</a></p>}
+  <Content />
+</ProseLayout>

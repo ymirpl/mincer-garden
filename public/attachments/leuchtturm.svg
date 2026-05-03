@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 900" role="img" aria-label="a dark dotted notebook on warm paper">
+  <rect width="900" height="900" fill="#eee5d7"/>
+  <rect x="250" y="130" width="390" height="640" rx="22" fill="#25221d"/>
+  <rect x="286" y="170" width="318" height="560" rx="10" fill="#312d27"/>
+  <g fill="#6b6258" opacity=".42">
+    <circle cx="330" cy="220" r="4"/><circle cx="390" cy="220" r="4"/><circle cx="450" cy="220" r="4"/><circle cx="510" cy="220" r="4"/><circle cx="570" cy="220" r="4"/>
+    <circle cx="330" cy="300" r="4"/><circle cx="390" cy="300" r="4"/><circle cx="450" cy="300" r="4"/><circle cx="510" cy="300" r="4"/><circle cx="570" cy="300" r="4"/>
+    <circle cx="330" cy="380" r="4"/><circle cx="390" cy="380" r="4"/><circle cx="450" cy="380" r="4"/><circle cx="510" cy="380" r="4"/><circle cx="570" cy="380" r="4"/>
+    <circle cx="330" cy="460" r="4"/><circle cx="390" cy="460" r="4"/><circle cx="450" cy="460" r="4"/><circle cx="510" cy="460" r="4"/><circle cx="570" cy="460" r="4"/>
+    <circle cx="330" cy="540" r="4"/><circle cx="390" cy="540" r="4"/><circle cx="450" cy="540" r="4"/><circle cx="510" cy="540" r="4"/><circle cx="570" cy="540" r="4"/>
+  </g>
+  <path d="M632 142c30 112 31 459-3 611" stroke="#171410" stroke-width="10" opacity=".35"/>
+</svg>

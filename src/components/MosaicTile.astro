@@ -1,0 +1,88 @@
+---
+import type { GardenItem } from '../lib/content';
+import { formatMonthDay, itemDate } from '../lib/content';
+import StatusMark from './StatusMark.astro';
+
+interface Props {
+  item: GardenItem;
+}
+
+const { item } = Astro.props;
+const style = item.tint ? `--tint:${item.tint}` : undefined;
+const badge = item.type === 'product' ? 'prod' : item.type === 'image' ? 'img' : item.type;
+---
+
+{
+  item.type === 'note' && (
+    <a class:list={['tile', item.featured ? 't-feature r16' : 't-note']} href={item.url} style={style}>
+      {item.featured && <div class="frame"><span class="drop-cap" aria-hidden="true">{item.title[0]}</span></div>}
+      <div class="pad">
+        <div class:list={['status', item.status]} aria-label={`note status: ${item.status}`}>
+          <StatusMark status={item.status} />
+          {item.status} · tended {formatMonthDay(itemDate(item))}
+        </div>
+        <h3>{item.title}</h3>
+        <p>{item.excerpt}</p>
+        {item.tags.length > 0 && (
+          <div class="tags-row">
+            {item.tags.slice(0, 3).map((tag) => <span>{tag}</span>)}
+          </div>
+        )}
+        <div class:list={['badge', item.type]}><span class="swatch"></span>{badge}</div>
+      </div>
+    </a>
+  )
+}
+
+{
+  item.type === 'tweet' && (
+    <a class="tile t-tweet" href={item.url} style={style}>
+      <div class="pad">
+        <blockquote>{item.excerpt}</blockquote>
+        <div class="date">{formatMonthDay(itemDate(item))}</div>
+        <div class:list={['badge', item.type]}><span class="swatch"></span>{badge}</div>
+      </div>
+    </a>
+  )
+}
+
+{
+  item.type === 'link' && (
+    <a class="tile t-link" href={item.url} style={style}>
+      <div class="og">
+        {item.image ? <img src={item.image} alt="" loading="lazy" /> : <p class="og-title">{item.title}</p>}
+      </div>
+      <div class="pad">
+        <h3>{item.title}</h3>
+        {item.excerpt && <p><em>{item.excerpt}</em></p>}
+        <div class="domain">{item.domain} · saved {formatMonthDay(itemDate(item))}</div>
+        <div class:list={['badge', item.type]}><span class="swatch"></span>{badge}</div>
+      </div>
+    </a>
+  )
+}
+
+{
+  item.type === 'product' && (
+    <a class="tile t-product" href={item.url} style={style}>
+      <div class="photo">
+        {item.image && <img src={item.image} alt={item.alt ?? item.title} loading="lazy" />}
+      </div>
+      <div class="name">
+        <span>{item.title}</span>
+        {item.brand && <span class="brand">{item.brand}</span>}
+      </div>
+    </a>
+  )
+}
+
+{
+  item.type === 'image' && (
+    <a class="tile t-image" href={item.url} style={style}>
+      <div class:list={['img', item.aspect ?? 'square']}>
+        {item.image && <img src={item.image} alt={item.alt ?? item.title} loading="lazy" />}
+      </div>
+      {item.caption && <div class="cap">{item.caption}</div>}
+    </a>
+  )
+}

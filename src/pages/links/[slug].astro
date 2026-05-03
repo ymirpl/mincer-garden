@@ -1,0 +1,18 @@
+---
+import { render } from 'astro:content';
+import ProseLayout from '../../layouts/ProseLayout.astro';
+import { getItemsByType } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const items = await getItemsByType('link');
+  return items.map((item) => ({ params: { slug: item.slug }, props: { item } }));
+}
+
+const { item } = Astro.props;
+const { Content } = await render(item.entry);
+---
+
+<ProseLayout item={item}>
+  <p><a href={item.externalUrl}>visit {item.domain}</a></p>
+  <Content />
+</ProseLayout>
