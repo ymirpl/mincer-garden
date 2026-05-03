@@ -3,7 +3,7 @@ import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
   site: 'https://ymirpl.github.io',
-  base: '/mincer-garden',
+  base: '/mincer-garden/',
   trailingSlash: 'never',
   integrations: [sitemap()],
   markdown: {

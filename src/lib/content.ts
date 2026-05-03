@@ -34,18 +34,22 @@ export interface GardenItem {
 
 const fallbackDate = new Date('2026-05-03T00:00:00Z');
 
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+
 const routes: Record<GardenType, string> = {
-  note: '/notes',
-  tweet: '/tweets',
-  link: '/links',
-  product: '/products',
-  image: '/images'
+  note: `${base}notes`,
+  tweet: `${base}tweets`,
+  link: `${base}links`,
+  product: `${base}products`,
+  image: `${base}images`
 };
 
 export function assetPath(value?: string) {
   if (!value) return undefined;
-  if (value.startsWith('http') || value.startsWith('/')) return value;
-  return `/attachments/${value}`;
+  if (value.startsWith('http')) return value;
+  if (value.startsWith('/attachments/')) return `${base}${value.slice(1)}`;
+  if (value.startsWith('/')) return value;
+  return `${base}attachments/${value}`;
 }
 
 export function domainFromUrl(value?: string) {
