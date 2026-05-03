@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>garden.mincer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FAF7F2;
+    --surface:#FFFFFF;
+    --ink:#1A1714;
+    --muted:#6E665B;
+    --hairline:rgba(20,17,12,0.08);
+    --hairline-strong:rgba(20,17,12,0.14);
+    --terracotta:#C2604A;
+    --sage:#6B8F71;
+    --highlight:#F4E5B2;
+    --blue:#1A45D6;
+    --visited:#5B3D9B;
+
+    --serif:"Source Serif 4", "Iowan Old Style", Georgia, serif;
+    --sans:"Inter", system-ui, -apple-system, sans-serif;
+    --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--serif);
+    font-size:16px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    font-feature-settings:"kern","liga","calt";
+  }
+
+  /* Subtle paper grain on body */
+  body::before{
+    content:"";
+    position:fixed;inset:0;
+    pointer-events:none;
+    background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNDAiIGhlaWdodD0iMjQwIj48ZmlsdGVyIGlkPSJuIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iMC44NSIgbnVtT2N0YXZlcz0iMiIgc3RpdGNoVGlsZXM9InN0aXRjaCIvPjxmZUNvbG9yTWF0cml4IHZhbHVlcz0iMCAwIDAgMCAwLjEwIDAgMCAwIDAgMC4wOSAwIDAgMCAwIDAuMDcgMCAwIDAgMC41NSAwIi8+PC9maWx0ZXI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsdGVyPSJ1cmwoI24pIi8+PC9zdmc+");
+    opacity:0.06;
+    mix-blend-mode:multiply;
+    z-index:1;
+  }
+  .stage{position:relative;z-index:2}
+
+  /* Skip link */
+  .skip-link{
+    position:absolute;
+    top:-40px;
+    left:0;
+    background:var(--ink);
+    color:var(--bg);
+    padding:8px 16px;
+    font-family:var(--mono);
+    font-size:12px;
+    text-decoration:none;
+    z-index:10000;
+    transition:top 120ms ease-out;
+  }
+  .skip-link:focus{top:0}
+
+  /* ---------- Header ---------- */
+  header.site{
+    max-width:1320px;
+    margin:0 auto;
+    padding:48px 32px 28px;
+    display:grid;
+    grid-template-columns:1fr auto;
+    align-items:baseline;
+    gap:24px;
+  }
+  .wordmark{
+    font-family:var(--serif);
+    font-weight:400;
+    font-size:21px;
+    letter-spacing:-0.005em;
+    text-transform:lowercase;
+  }
+  .wordmark .sprig{
+    color:var(--sage);
+    font-style:italic;
+    margin-right:6px;
+  }
+  nav.views{
+    font-family:var(--serif);
+    font-size:17px;
+    color:var(--muted);
+    display:flex;
+    gap:14px;
+    align-items:baseline;
+  }
+  nav.views a{
+    color:var(--ink);
+    text-decoration:underline;
+    text-decoration-color:var(--terracotta);
+    text-underline-offset:3px;
+    text-decoration-thickness:1px;
+  }
+  nav.views .sep{color:var(--muted);font-size:14px}
+  nav.views a.active,
+  nav.views span.active{
+    color:var(--muted);
+    text-decoration:none;
+    cursor:default;
+  }
+
+  /* ---------- Intro band ---------- */
+  .intro{
+    max-width:1320px;
+    margin:0 auto;
+    padding:8px 32px 28px;
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    border-bottom:1px solid var(--hairline);
+  }
+  .intro .now{
+    font-family:var(--serif);
+    font-style:italic;
+    color:var(--muted);
+    font-size:18px;
+    max-width:62ch;
+  }
+  .intro .now em{color:var(--ink);font-style:italic}
+  .intro .meta{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--muted);
+    text-transform:lowercase;
+    letter-spacing:0.04em;
+    white-space:nowrap;
+  }
+
+  /* ---------- Filter strip ---------- */
+  .filters{
+    max-width:1320px;
+    margin:0 auto;
+    padding:18px 32px 24px;
+    display:flex;
+    gap:18px;
+    flex-wrap:wrap;
+    font-family:var(--mono);
+    font-size:11px;
+    text-transform:lowercase;
+    letter-spacing:0.06em;
+    color:var(--muted);
+    align-items:center;
+  }
+  .filters .group{display:flex;gap:14px;align-items:center}
+  .filters .label{color:var(--ink);opacity:0.45}
+  .filters a{
+    color:var(--muted);
+    text-decoration:none;
+    padding-bottom:2px;
+  }
+  .filters a.on{
+    color:var(--ink);
+    border-bottom:1px solid var(--terracotta);
+  }
+  .filters .dot{color:var(--hairline-strong)}
+  .filters a .glyph{
+    width:10px;height:10px;
+    display:inline-block;
+    vertical-align:-1px;
+    margin-right:4px;
+  }
+
+  /* ---------- Mosaic ---------- */
+  main.mosaic{
+    max-width:1320px;
+    margin:0 auto;
+    padding:8px 32px 80px;
+    column-count:4;
+    column-gap:18px;
+  }
+  @media (max-width:1180px){ main.mosaic{column-count:3} }
+  @media (max-width:760px){ main.mosaic{column-count:2;column-gap:12px} .intro{flex-direction:column;gap:8px;align-items:flex-start} header.site{padding:28px 20px 16px} }
+  @media (max-width:480px){ main.mosaic{column-count:1} }
+
+  .tile{
+    --tint:#1A1714; /* default = ink, tiles without a tint stay neutral */
+    display:block;
+    break-inside:avoid;
+    margin:0 0 18px;
+    background:color-mix(in oklch, var(--tint) 10%, var(--surface));
+    border:1px solid color-mix(in oklch, var(--tint) 18%, var(--hairline));
+    border-radius:12px;
+    overflow:hidden;
+    color:inherit;
+    text-decoration:none;
+    box-shadow:
+      0 1px 2px rgba(20,17,12,0.03),
+      0 6px 18px -10px color-mix(in oklch, var(--tint) 35%, transparent);
+    position:relative;
+  }
+  @media (prefers-reduced-motion: no-preference){
+    .tile{
+      transition:box-shadow 240ms ease-out, border-color 220ms ease-out;
+    }
+  }
+  .tile:hover{
+    box-shadow:
+      0 2px 4px rgba(20,17,12,0.04),
+      0 18px 40px -12px color-mix(in oklch, var(--tint) 55%, transparent);
+    border-color:color-mix(in oklch, var(--tint) 28%, var(--hairline-strong));
+  }
+  .tile:focus-visible{
+    outline:2px solid var(--terracotta);
+    outline-offset:2px;
+    border-radius:14px;
+  }
+  .tile.r16{border-radius:16px}
+  .tile.r16:focus-visible{border-radius:18px}
+  .tile .pad{padding:20px}
+
+  /* Type badge bottom-left */
+  .badge{
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:0.14em;
+    color:var(--muted);
+    text-transform:uppercase;
+    margin-top:14px;
+    display:flex;
+    gap:8px;
+    align-items:center;
+  }
+  .badge .swatch{
+    display:inline-block;
+    width:6px;height:6px;border-radius:50%;
+    background:var(--terracotta);
+  }
+  .badge.note .swatch{background:var(--sage)}
+  .badge.tweet .swatch{background:#B7873A}
+  .badge.link .swatch{background:#3F6BB8}
+  .badge.product .swatch{background:#8B5A8C}
+  .badge.image .swatch{background:#7A8C5A}
+
+  /* ---------- Tile: Note card ---------- */
+  .t-note h3{
+    font-family:var(--serif);
+    font-weight:500;
+    font-size:23px;
+    line-height:1.18;
+    letter-spacing:-0.01em;
+    margin:0 0 10px;
+  }
+  .t-note p{
+    font-family:var(--serif);
+    font-size:15px;
+    line-height:1.55;
+    color:var(--muted);
+    margin:0;
+    display:-webkit-box;
+    -webkit-line-clamp:4;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+  .status{
+    display:inline-flex;
+    gap:6px;align-items:center;
+    font-family:var(--mono);
+    font-size:10px;
+    text-transform:lowercase;
+    letter-spacing:0.08em;
+    color:var(--terracotta);
+    margin-bottom:10px;
+  }
+  .status.evergreen{color:var(--sage)}
+  .status .glyph{
+    width:12px;height:12px;
+    display:inline-block;
+  }
+  .tags-row{
+    margin-top:14px;
+    font-family:var(--mono);
+    font-size:10px;
+    text-transform:lowercase;
+    letter-spacing:0.08em;
+    color:var(--muted);
+  }
+  .tags-row span+span::before{content:" · ";opacity:0.5}
+
+  /* ---------- Tile: Note feature (2x2 vibe) ---------- */
+  .t-feature{}
+  .t-feature .pad{padding:28px 28px 24px}
+  .t-feature h3{
+    font-family:var(--serif);
+    font-weight:500;
+    font-size:34px;
+    line-height:1.08;
+    letter-spacing:-0.015em;
+    margin:0 0 14px;
+  }
+  .t-feature p{
+    font-family:var(--serif);
+    font-size:17px;
+    line-height:1.55;
+    color:var(--muted);
+    margin:0;
+  }
+  .t-feature .frame{
+    height:140px;
+    background:
+      linear-gradient(180deg,#F1E8DA, #E8DCC6);
+    border-bottom:1px solid var(--hairline);
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--serif);
+    font-size:41px;
+    font-weight:300;
+    color:var(--sage);
+    line-height:1;
+  }
+  .t-feature .frame .drop-cap{
+    display:inline-block;
+    font-size:60px;
+    line-height:0.8;
+    margin-right:8px;
+    vertical-align:-6px;
+  }
+
+  /* ---------- Tile: Tweet ---------- */
+  .t-tweet .pad{padding:22px 22px 20px}
+  .t-tweet blockquote{
+    font-family:var(--serif);
+    font-weight:400;
+    font-size:19px;
+    line-height:1.42;
+    margin:0;
+    letter-spacing:-0.005em;
+  }
+  .t-tweet .date{
+    margin-top:14px;
+    font-family:var(--mono);
+    font-size:10px;letter-spacing:0.1em;color:var(--muted);
+  }
+  .t-tweet em.mark{
+    background:var(--highlight);
+    font-style:normal;
+    box-shadow:inset 0 -0.4em 0 var(--highlight);
+    padding:0 2px;
+  }
+
+  /* ---------- Tile: Link with OG ---------- */
+  .t-link{}
+  .t-link .og{
+    height:170px;
+    background:color-mix(in oklch, var(--tint) 22%, var(--surface));
+    border-bottom:1px solid var(--hairline);
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    align-items:flex-end;
+    padding:16px;
+  }
+  .t-link .og .og-title{
+    font-family:var(--serif);
+    font-size:19px;
+    line-height:1.25;
+    color:var(--ink);
+    margin:0;
+  }
+  .t-link h3{
+    font-family:var(--serif);
+    font-weight:500;
+    font-size:19px;
+    line-height:1.22;
+    margin:0 0 8px;
+    letter-spacing:-0.005em;
+  }
+  .t-link p{
+    font-family:var(--serif);
+    font-size:14.5px;
+    line-height:1.5;
+    color:var(--muted);
+    margin:0;
+  }
+  .t-link .domain{
+    margin-top:12px;
+    font-family:var(--mono);
+    font-size:10px;letter-spacing:0.08em;color:var(--muted);
+  }
+
+  /* ---------- Tile: Product ---------- */
+  .t-product{}
+  .t-product .photo{
+    aspect-ratio:1/1;
+    background:color-mix(in oklch, var(--tint) 18%, var(--surface));
+    border-bottom:1px solid var(--hairline);
+    position:relative;
+    overflow:hidden;
+  }
+  .t-product:hover .photo{
+    box-shadow:0 8px 30px -10px var(--tint);
+  }
+  .t-product .photo img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  .t-product .name{
+    font-family:var(--serif);
+    font-size:15px;
+    line-height:1.3;
+    padding:14px 16px 16px;
+    display:flex;justify-content:space-between;gap:10px;
+  }
+  .t-product .name .brand{color:var(--muted);font-style:italic}
+
+  /* ---------- Tile: Image ---------- */
+  .t-image{
+    background:color-mix(in oklch, var(--tint) 18%, var(--surface));
+  }
+  .t-image .img{
+    width:100%;
+    display:block;
+    background:color-mix(in oklch, var(--tint) 22%, var(--surface));
+    position:relative;
+    overflow:hidden;
+  }
+  .t-image:hover .img{
+    box-shadow:0 8px 30px -10px var(--tint);
+  }
+  .t-image .img img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  .t-image .img.tall{aspect-ratio:3/4}
+  .t-image .img.wide{aspect-ratio:4/3}
+  .t-image .img.square{aspect-ratio:1/1}
+  .t-image .img.portrait-tall{aspect-ratio:2/3}
+  .t-image .cap{
+    padding:10px 14px 14px;
+    font-family:var(--serif);
+    font-style:italic;
+    font-size:13.5px;
+    color:var(--muted);
+  }
+
+  /* ---------- Tile: Pull quote ---------- */
+  .t-quote{
+    background:transparent;
+    border:none;
+    box-shadow:none;
+  }
+  .t-quote:hover{transform:none;box-shadow:none}
+  .t-quote .pad{padding:6px 4px}
+  .t-quote blockquote{
+    font-family:var(--serif);
+    font-style:italic;
+    font-size:23px;
+    line-height:1.32;
+    margin:0;
+    color:var(--ink);
+    letter-spacing:-0.005em;
+    padding-left:0;
+  }
+  .t-quote cite{
+    display:block;
+    margin-top:14px;
+    font-style:normal;
+    font-family:var(--mono);
+    font-size:10px;letter-spacing:0.08em;
+    color:var(--muted);
+  }
+
+  /* ---------- Footer / colophon ---------- */
+  footer.colophon{
+    max-width:1320px;
+    margin:0 auto;
+    padding:32px 32px 80px;
+    border-top:1px solid var(--hairline);
+    font-family:var(--mono);
+    font-size:11px;
+    text-transform:lowercase;
+    color:var(--muted);
+    letter-spacing:0.06em;
+    display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;
+  }
+  footer.colophon a{color:var(--muted);text-decoration:underline;text-decoration-color:var(--hairline-strong);text-underline-offset:3px}
+
+  /* ---------- LIST VIEW ---------- */
+  body[data-view="list"]::before{display:none}
+  body[data-view="list"] .filters{display:none}
+  body[data-view="list"] main.mosaic{display:none}
+  body[data-view="list"] .intro{display:none}
+  body[data-view="list"] .listroot{display:block}
+
+  body[data-view="mosaic"] .listroot{display:none}
+
+  .listroot{
+    max-width:720px;
+    margin:0 auto;
+    padding:8px 24px 96px;
+  }
+  .listroot .year{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--muted);
+    letter-spacing:0.16em;
+    text-transform:lowercase;
+    margin:48px 0 14px;
+  }
+  .listroot .row{
+    display:grid;
+    grid-template-columns:1fr auto;
+    gap:24px;
+    align-items:baseline;
+    padding:8px 0;
+  }
+  .listroot .row a{
+    font-family:var(--serif);
+    font-size:17px;
+    color:var(--blue);
+    text-decoration:underline;
+    text-underline-offset:3px;
+    text-decoration-thickness:1px;
+    text-transform:lowercase;
+  }
+  .listroot .row a:hover{text-decoration-thickness:2px}
+  .listroot .row .d{
+    font-family:var(--mono);
+    font-size:13px;
+    color:var(--muted);
+    white-space:nowrap;
+  }
+  /* small leaf glyph */
+  .leaf{display:inline-block;vertical-align:-2px}
+
+</style>
+</head>
+<body data-view="mosaic">
+<a href="#mosaic" class="skip-link">skip to content</a>
+<div class="stage">
+
+<header class="site">
+  <div class="wordmark">
+    <span class="sprig" aria-hidden="true">
+      <svg class="leaf" width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M2 12 C 4 6, 8 3, 12 2 C 12 7, 9 11, 4 12 Z" stroke="#6B8F71" stroke-width="0.9" fill="rgba(107,143,113,0.18)" stroke-linejoin="round"></path>
+        <path d="M2.5 11.5 L 9 5" stroke="#6B8F71" stroke-width="0.7" stroke-linecap="round"></path>
+      </svg>
+    </span>garden.mincer
+  </div>
+  <nav class="views" id="views" aria-label="view switcher">
+    <a href="#" data-go="mosaic" id="v-mosaic" class="active">mosaic</a>
+    <span class="sep" aria-hidden="true">·</span>
+    <a href="#" data-go="list" id="v-list">notes</a>
+  </nav>
+</header>
+
+<section class="intro" aria-label="about this garden">
+  <div class="now">
+    a small wall of <em>fragments</em>, links, products, images and notes
+  </div>
+  <div class="meta">tended apr 26, 2026 · 412 fragments · 87 evergreen</div>
+</section>
+
+<section class="filters" aria-label="filters">
+  <div class="group">
+    <span class="label">type</span>
+    <a href="#" class="on">all</a>
+    <a href="#">notes</a>
+    <a href="#">tweets</a>
+    <a href="#">links</a>
+    <a href="#">products</a>
+    <a href="#">images</a>
+  </div>
+  <span class="dot" aria-hidden="true">·</span>
+  <div class="group">
+    <span class="label">tag</span>
+    <a href="#">attention</a>
+    <a href="#">taste</a>
+    <a href="#">design</a>
+    <a href="#">tools</a>
+    <a href="#">como</a>
+    <a href="#">+ 38</a>
+  </div>
+  <span class="dot" aria-hidden="true">·</span>
+  <div class="group">
+    <span class="label">growth</span>
+    <a href="#">
+      <svg class="glyph" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+        <path d="M6 10 L 6 5" stroke="#C2604A" stroke-width="0.9" stroke-linecap="round"></path>
+        <path d="M6 6 C 4 5, 3 6, 3 8" stroke="#C2604A" stroke-width="0.8" fill="none"></path>
+        <path d="M6 6 C 8 5, 9 6, 9 8" stroke="#C2604A" stroke-width="0.8" fill="none"></path>
+      </svg>
+      seedling
+    </a>
+    <a href="#">
+      <svg class="glyph" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+        <path d="M2 10 C 4 7, 7 5, 10 5" stroke="#C2604A" stroke-width="0.9" fill="none"></path>
+        <ellipse cx="9.5" cy="4.6" rx="1.6" ry="1" stroke="#C2604A" stroke-width="0.7" fill="rgba(194,96,74,0.18)"></ellipse>
+      </svg>
+      budding
+    </a>
+    <a href="#">
+      <svg class="glyph" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+        <path d="M2 10 C 3 7, 5 5, 8 4 C 10 7, 8 10, 5 10 Z" stroke="#6B8F71" stroke-width="0.8" fill="rgba(107,143,113,0.25)"></path>
+        <path d="M6 10 L 6 6" stroke="#6B8F71" stroke-width="0.7"></path>
+      </svg>
+      evergreen
+    </a>
+  </div>
+</section>
+
+<main class="mosaic" id="mosaic">
+
+  <!-- 1. Featured note -->
+  <a class="tile t-feature r16" href="#" style="--tint:#C9A97A">
+    <div class="frame"><span class="drop-cap" aria-hidden="true">A</span></div>
+    <div class="pad">
+      <div class="status evergreen">
+        <svg class="glyph" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+          <path d="M2 10 C 3 7, 5 5, 8 4 C 10 7, 8 10, 5 10 Z" stroke="#6B8F71" stroke-width="0.8" fill="rgba(107,143,113,0.25)"></path>
+          <path d="M6 10 L 6 6" stroke="#6B8F71" stroke-width="0.7"></path>
+        </svg>
+        evergreen · tended apr 12
+      </div>
+      <h3>On attention, and the people who make us pay it</h3>
+      <p>The economy of attention is older than the internet. Cathedrals, market squares, the proscenium arch — every era invents new architectures to make us look. What's strange about ours is how thoroughly the architecture has retreated into the interface.</p>
+      <div class="tags-row"><span>attention</span><span>essays</span><span>seedling-no-more</span></div>
+      <div class="badge note"><span class="swatch"></span>note</div>
+    </div>
+  </a>
+
+  <!-- 2. Tweet -->
+  <a class="tile t-tweet" href="#">
+    <div class="pad">
+      <blockquote>the internet would be better if half of it were <em class="mark">indexed by hand</em>.</blockquote>
+      <div class="date">apr 22, 2026 · 11:04</div>
+      <div class="badge tweet"><span class="swatch"></span>tweet</div>
+    </div>
+  </a>
+
+  <!-- 3. Image (tall) -->
+  <a class="tile t-image" href="#" style="--tint:#7A6D54">
+    <div class="img tall">
+      <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?w=600&q=80" alt="study desk in como, late afternoon light" loading="lazy">
+    </div>
+    <div class="cap">light through linen, late afternoon, the room about to be quiet.</div>
+  </a>
+
+  <!-- 4. Product -->
+  <a class="tile t-product" href="#" style="--tint:#2A2520">
+    <div class="photo">
+      <img src="https://images.unsplash.com/photo-1544816155-12df9643f363?w=600&q=80" alt="leuchtturm1917 a5 dotted notebook" loading="lazy">
+    </div>
+    <div class="name">
+      <span>leuchtturm1917 a5 dotted</span>
+      <span class="brand">leuchtturm</span>
+    </div>
+  </a>
+
+  <!-- 5. Note seedling -->
+  <a class="tile t-note" href="#">
+    <div class="pad">
+      <div class="status">
+        <svg class="glyph" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+          <path d="M6 10 L 6 5" stroke="#C2604A" stroke-width="0.9" stroke-linecap="round"></path>
+          <path d="M6 6 C 4 5, 3 6, 3 8" stroke="#C2604A" stroke-width="0.8" fill="none"></path>
+          <path d="M6 6 C 8 5, 9 6, 9 8" stroke="#C2604A" stroke-width="0.8" fill="none"></path>
+        </svg>
+        seedling · planted apr 18
+      </div>
+      <h3>a small theory of bookshelves</h3>
+      <p>Bookshelves are biographical, not bibliographic. The point isn't to hold the books you've read — it's to hold the books you'd want a guest to ask you about.</p>
+      <div class="tags-row"><span>taste</span><span>books</span></div>
+      <div class="badge note"><span class="swatch"></span>note</div>
+    </div>
+  </a>
+
+  <!-- 6. Link with OG -->
+  <a class="tile t-link" href="#" style="--tint:#B58957">
+    <div class="og">
+      <p class="og-title">The Attention Economy and Its Discontents</p>
+    </div>
+    <div class="pad">
+      <h3>The Attention Economy and Its Discontents</h3>
+      <p><em>via n+1, april '26 — argues that the inside-the-firm economy now mirrors the consumer one, with the same rewards and the same fatigue.</em></p>
+      <div class="domain">nplusonemag.com · saved apr 14</div>
+      <div class="badge link"><span class="swatch"></span>link</div>
+    </div>
+  </a>
+
+  <!-- 7. Image square -->
+  <a class="tile t-image" href="#" style="--tint:#C9B084">
+    <div class="img square">
+      <img src="https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=600&q=80" alt="aged paper texture scan" loading="lazy">
+    </div>
+  </a>
+
+  <!-- 8. Tweet small -->
+  <a class="tile t-tweet" href="#">
+    <div class="pad">
+      <blockquote>most "design taste" is just having looked at more things, more carefully, for longer.</blockquote>
+      <div class="date">apr 19, 2026</div>
+      <div class="badge tweet"><span class="swatch"></span>tweet</div>
+    </div>
+  </a>
+
+  <!-- 9. Pull quote (no chrome) -->
+  <div class="tile t-quote">
+    <div class="pad">
+      <blockquote>"a garden is just dirt, considered."</blockquote>
+      <cite>from <i>on attention</i></cite>
+    </div>
+  </div>
+
+  <!-- 10. Product -->
+  <a class="tile t-product" href="#" style="--tint:#7E977E">
+    <div class="photo">
+      <img src="https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=600&q=80" alt="matte ceramic mug" loading="lazy">
+    </div>
+    <div class="name">
+      <span>matte ceramic mug</span>
+      <span class="brand">muji</span>
+    </div>
+  </a>
+
+  <!-- 11. Image wide -->
+  <a class="tile t-image" href="#" style="--tint:#5A6E63">
+    <div class="img wide">
+      <img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&q=80" alt="lake como, grey morning before the sun returned" loading="lazy">
+    </div>
+    <div class="cap">three minutes of grey before the sun came back.</div>
+  </a>
+
+  <!-- 12. Note budding -->
+  <a class="tile t-note" href="#">
+    <div class="pad">
+      <div class="status">
+        <svg class="glyph" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+          <path d="M2 10 C 4 7, 7 5, 10 5" stroke="#C2604A" stroke-width="0.9" fill="none"></path>
+          <ellipse cx="9.5" cy="4.6" rx="1.6" ry="1" stroke="#C2604A" stroke-width="0.7" fill="rgba(194,96,74,0.18)"></ellipse>
+        </svg>
+        budding · tended apr 10
+      </div>
+      <h3>what i learned rebuilding my portfolio</h3>
+      <p>The temptation is always to redesign the chrome. The thing that actually moved me forward was deleting two-thirds of the projects, then writing the captions out longhand before opening Figma.</p>
+      <div class="tags-row"><span>design</span><span>process</span><span>writing</span></div>
+      <div class="badge note"><span class="swatch"></span>note</div>
+    </div>
+  </a>
+
+  <!-- 13. Link -->
+  <a class="tile t-link" href="#" style="--tint:#2A3A4E">
+    <div class="og">
+      <p class="og-title">A Brief History &amp; Ethos of the Digital Garden</p>
+    </div>
+    <div class="pad">
+      <h3>A Brief History &amp; Ethos of the Digital Garden</h3>
+      <p><em>seminal — the post that named the thing. read it once a year as a re-orientation.</em></p>
+      <div class="domain">maggieappleton.com · saved feb 03</div>
+      <div class="badge link"><span class="swatch"></span>link</div>
+    </div>
+  </a>
+
+  <!-- 14. Image portrait tall -->
+  <a class="tile t-image" href="#" style="--tint:#A37E48">
+    <div class="img portrait-tall">
+      <img src="https://images.unsplash.com/photo-1590490360182-c33d57733427?w=600&q=80" alt="olive grove in puglia, september" loading="lazy">
+    </div>
+  </a>
+
+  <!-- 15. Tweet -->
+  <a class="tile t-tweet" href="#">
+    <div class="pad">
+      <blockquote>reverse-chron is a feed. a garden is ordered by topic. you don't visit a garden to see what's new.</blockquote>
+      <div class="date">apr 06, 2026</div>
+      <div class="badge tweet"><span class="swatch"></span>tweet</div>
+    </div>
+  </a>
+
+  <!-- 16. Product -->
+  <a class="tile t-product" href="#" style="--tint:#B89976">
+    <div class="photo">
+      <img src="https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=600&q=80" alt="aesop post-poo drops bottle" loading="lazy">
+    </div>
+    <div class="name">
+      <span>post-poo drops</span>
+      <span class="brand">aesop</span>
+    </div>
+  </a>
+
+  <!-- 17. Note seedling small -->
+  <a class="tile t-note" href="#">
+    <div class="pad">
+      <div class="status">
+        <svg class="glyph" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+          <path d="M6 10 L 6 5" stroke="#C2604A" stroke-width="0.9" stroke-linecap="round"></path>
+          <path d="M6 6 C 4 5, 3 6, 3 8" stroke="#C2604A" stroke-width="0.8" fill="none"></path>
+          <path d="M6 6 C 8 5, 9 6, 9 8" stroke="#C2604A" stroke-width="0.8" fill="none"></path>
+        </svg>
+        seedling · planted apr 03
+      </div>
+      <h3>como is not lake garda</h3>
+      <p>One has the mountain pressing in; the other has the mountain politely receding. They reward different temperaments.</p>
+      <div class="tags-row"><span>como</span><span>travel</span></div>
+      <div class="badge note"><span class="swatch"></span>note</div>
+    </div>
+  </a>
+
+  <!-- 18. Image square dark -->
+  <a class="tile t-image" href="#" style="--tint:#3A4556">
+    <div class="img square">
+      <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?w=600&q=80" alt="night mountains, genova to rapallo" loading="lazy">
+    </div>
+  </a>
+
+  <!-- 19. Link -->
+  <a class="tile t-link" href="#" style="--tint:#C4AC7E">
+    <div class="og">
+      <p class="og-title">Evergreen notes should be atomic</p>
+    </div>
+    <div class="pad">
+      <h3>Evergreen notes should be atomic</h3>
+      <p><em>the foundational technique behind half the gardens i admire. the rule: one note, one idea.</em></p>
+      <div class="domain">notes.andymatuschak.org · saved jan 21</div>
+      <div class="badge link"><span class="swatch"></span>link</div>
+    </div>
+  </a>
+
+  <!-- 20. Tweet -->
+  <a class="tile t-tweet" href="#">
+    <div class="pad">
+      <blockquote>publishing seedlings is just letting people see the soil.</blockquote>
+      <div class="date">mar 28, 2026</div>
+      <div class="badge tweet"><span class="swatch"></span>tweet</div>
+    </div>
+  </a>
+
+  <!-- 21. Product -->
+  <a class="tile t-product" href="#" style="--tint:#C8B894">
+    <div class="photo">
+      <img src="https://images.unsplash.com/photo-1517842645767-c639042777db?w=600&q=80" alt="field notes pitch black dot grid notebook" loading="lazy">
+    </div>
+    <div class="name">
+      <span>pitch black, dot grid</span>
+      <span class="brand">field notes</span>
+    </div>
+  </a>
+
+  <!-- 22. Image tall -->
+  <a class="tile t-image" href="#" style="--tint:#D6BC8B">
+    <div class="img tall">
+      <img src="https://images.unsplash.com/photo-1532012197267-da84d127e765?w=600&q=80" alt="old book with marginalia, book of the dead scan" loading="lazy">
+    </div>
+    <div class="cap">someone in 1487 was thinking about the same thing i was.</div>
+  </a>
+
+  <!-- 23. Note -->
+  <a class="tile t-note" href="#">
+    <div class="pad">
+      <div class="status">
+        <svg class="glyph" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+          <path d="M2 10 C 4 7, 7 5, 10 5" stroke="#C2604A" stroke-width="0.9" fill="none"></path>
+          <ellipse cx="9.5" cy="4.6" rx="1.6" ry="1" stroke="#C2604A" stroke-width="0.7" fill="rgba(194,96,74,0.18)"></ellipse>
+        </svg>
+        budding · tended mar 19
+      </div>
+      <h3>the case for less software</h3>
+      <p>The most-loved tools in my kit are the ones I almost never open. Their job is to be there when I need them, not to fight for my attention every morning.</p>
+      <div class="tags-row"><span>tools</span><span>attention</span></div>
+      <div class="badge note"><span class="swatch"></span>note</div>
+    </div>
+  </a>
+
+  <!-- 24. Pull quote -->
+  <div class="tile t-quote">
+    <div class="pad">
+      <blockquote>"the agent's job is to accelerate capture, not to produce thinking."</blockquote>
+      <cite>from agents.md</cite>
+    </div>
+  </div>
+
+</main>
+
+<!-- LIST VIEW -->
+<section class="listroot" aria-hidden="true">
+  <div class="year">2026</div>
+  <div class="row"><a href="#">on attention, and the people who make us pay it</a><span class="d">apr 12</span></div>
+  <div class="row"><a href="#">a small theory of bookshelves</a><span class="d">apr 04</span></div>
+  <div class="row"><a href="#">what i learned rebuilding my portfolio</a><span class="d">mar 19</span></div>
+  <div class="row"><a href="#">como is not lake garda</a><span class="d">jan 03</span></div>
+
+  <div class="year">2025</div>
+  <div class="row"><a href="#">every chair i have owned</a><span class="d">dec 22</span></div>
+  <div class="row"><a href="#">the case for less software</a><span class="d">nov 03</span></div>
+  <div class="row"><a href="#">ai infra basket: notes from a tourist</a><span class="d">oct 19</span></div>
+  <div class="row"><a href="#">on the pleasure of a thin notebook</a><span class="d">sep 14</span></div>
+  <div class="row"><a href="#">marginalia, mostly</a><span class="d">aug 02</span></div>
+  <div class="row"><a href="#">italian breakfasts, ranked</a><span class="d">jun 11</span></div>
+  <div class="row"><a href="#">how i'm using hermes</a><span class="d">may 04</span></div>
+  <div class="row"><a href="#">why my homepage is a wall</a><span class="d">mar 22</span></div>
+
+  <div class="year">2024</div>
+  <div class="row"><a href="#">small letters, big rooms</a><span class="d">dec 10</span></div>
+  <div class="row"><a href="#">a year of reading less, badly</a><span class="d">nov 28</span></div>
+  <div class="row"><a href="#">on quitting twitter slowly</a><span class="d">sep 02</span></div>
+  <div class="row"><a href="#">the joy of an empty calendar</a><span class="d">jul 17</span></div>
+
+</section>
+
+<footer class="colophon">
+  <div>tended in markdown · <a href="#">github →</a> · <a href="#">rss →</a></div>
+  <div>tints sampled per image at build · prefers warm-paper · v0.1</div>
+</footer>
+
+</div>
+
+<script>
+  const body = document.body;
+  document.querySelectorAll('[data-go]').forEach(a=>{
+    a.addEventListener('click', e=>{
+      e.preventDefault();
+      const v = a.dataset.go;
+      body.dataset.view = v;
+      document.getElementById('v-mosaic').classList.toggle('active', v==='mosaic');
+      document.getElementById('v-list').classList.toggle('active', v==='list');
+      window.scrollTo({top:0, behavior:'instant'});
+    });
+  });
+</script>
+
+</body>
+</html>
