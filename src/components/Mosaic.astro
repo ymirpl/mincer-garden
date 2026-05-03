@@ -6,10 +6,11 @@ interface Props {
   items: GardenItem[];
   currentType?: string;
   currentTag?: string;
+  currentStatus?: string;
   tags?: { tag: string; count: number }[];
 }
 
-const { items, currentType = 'all', currentTag, tags = [] } = Astro.props;
+const { items, currentType = 'all', currentTag, currentStatus, tags = [] } = Astro.props;
 const types = ['all', 'notes', 'tweets', 'links', 'products', 'images'];
 ---
 
@@ -43,7 +44,7 @@ const types = ['all', 'notes', 'tweets', 'links', 'products', 'images'];
   <span class="dot" aria-hidden="true">·</span>
   <div class="group">
     <span class="label">growth</span>
-    <a href="/tags/seedling">
+    <a href="/status/seedling" class:list={{ on: currentStatus === 'seedling' }}>
       <svg class="glyph" viewBox="0 0 12 12" fill="none" aria-hidden="true">
         <path d="M6 10 L 6 5" stroke="#C2604A" stroke-width="0.9" stroke-linecap="round"></path>
         <path d="M6 6 C 4 5, 3 6, 3 8" stroke="#C2604A" stroke-width="0.8" fill="none"></path>
@@ -51,14 +52,14 @@ const types = ['all', 'notes', 'tweets', 'links', 'products', 'images'];
       </svg>
       seedling
     </a>
-    <a href="/tags/budding">
+    <a href="/status/budding" class:list={{ on: currentStatus === 'budding' }}>
       <svg class="glyph" viewBox="0 0 12 12" fill="none" aria-hidden="true">
         <path d="M2 10 C 4 7, 7 5, 10 5" stroke="#C2604A" stroke-width="0.9" fill="none"></path>
         <ellipse cx="9.5" cy="4.6" rx="1.6" ry="1" stroke="#C2604A" stroke-width="0.7" fill="rgba(194,96,74,0.18)"></ellipse>
       </svg>
       budding
     </a>
-    <a href="/tags/evergreen">
+    <a href="/status/evergreen" class:list={{ on: currentStatus === 'evergreen' }}>
       <svg class="glyph" viewBox="0 0 12 12" fill="none" aria-hidden="true">
         <path d="M2 10 C 3 7, 5 5, 8 4 C 10 7, 8 10, 5 10 Z" stroke="#6B8F71" stroke-width="0.8" fill="rgba(107,143,113,0.25)"></path>
         <path d="M6 10 L 6 6" stroke="#6B8F71" stroke-width="0.7"></path>

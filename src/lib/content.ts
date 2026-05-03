@@ -197,6 +197,11 @@ export async function getItemsByType(type: GardenType) {
   return items.filter((item) => item.type === type);
 }
 
+export async function getItemsByStatus(status: string) {
+  const items = await getGardenItems();
+  return items.filter((item) => item.status === status);
+}
+
 export function compareGardenItems(a: GardenItem, b: GardenItem) {
   const byPinned = Number(b.pinned) - Number(a.pinned);
   if (byPinned) return byPinned;

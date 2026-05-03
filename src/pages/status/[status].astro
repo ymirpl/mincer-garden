@@ -1,0 +1,18 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Mosaic from '../../components/Mosaic.astro';
+import { getGardenItems, getItemsByStatus, getTagCounts, interleaveItems } from '../../lib/content';
+
+export async function getStaticPaths() {
+  return ['seedling', 'budding', 'evergreen'].map((status) => ({ params: { status } }));
+}
+
+const { status } = Astro.params;
+const allItems = await getGardenItems();
+const items = interleaveItems(await getItemsByStatus(status!));
+const tags = getTagCounts(allItems);
+---
+
+<BaseLayout title={`status: ${status}`}>
+  <Mosaic items={items} currentStatus={status} tags={tags} />
+</BaseLayout>

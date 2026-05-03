@@ -57,3 +57,40 @@ Use `[[note-slug]]` or `[[note-slug|display text]]` in prose. `related` frontmat
 ## Build
 
 Use `npm run dev` for local development, `npm run build` for static output, and `npm run preview` for local QA after a build. The deployed site should remain zero-runtime-JS for the main reading and browsing surfaces.
+
+## Inbox
+
+`inbox/raw/` is a capture buffer for unformatted stuff. Drop anything there and run `npm run inbox` to process it into proper garden files.
+
+### What goes in the inbox
+
+- **URL files** (`.url` or `.txt` containing a single URL) → becomes a `link`. `defuddle` fetches title and description automatically.
+- **Markdown with frontmatter** → routed to the correct folder based on frontmatter keys (`url` = link, `name` + `image` = product, `src` + `alt` = image, `title` = note, none = tweet).
+- **Markdown without frontmatter, ≤280 chars** → becomes a `tweet`.
+- **Markdown without frontmatter, >280 chars** → becomes a `note`. The first line becomes the title; the rest becomes the body.
+- **Image files** (`.jpg`, `.png`, `.webp`, `.svg`, `.gif`) → moved to `public/attachments/` and an `image` markdown file is created alongside.
+
+### Agent inbox workflow
+
+When the user pastes a raw capture with no instruction:
+
+1. Draft a file in `inbox/raw/` using the simplest possible format:
+   - Just a URL → save as `YYYY-MM-DD-<slug>.url`
+   - A raw thought → save as `YYYY-MM-DD-<slug>.md`
+   - An image → save as-is (the script will rename with a date prefix)
+2. Do **not** guess tags. Use `[change-me]` if unsure.
+3. Do **not** write frontmatter for raw text unless the user specifies type or fields.
+4. Show the user what will be created, then run `npm run inbox` on confirmation.
+5. Report the created files and any `change-me` tags that need replacing.
+
+### Processing details
+
+`scripts/process-inbox.mjs` handles the conversion:
+
+1. Reads every file in `inbox/raw/` (ignoring `.gitkeep` and dotfiles).
+2. For URLs: runs `npx defuddle parse <url> --json` to extract title and description. Falls back to basic URL metadata if defuddle fails.
+3. Generates filenames per garden conventions, checking for collisions and appending `-1`, `-2`, etc.
+4. Writes markdown to `notes/`, `tweets/`, `links/`, `products/`, or `images/`.
+5. Moves the original file to `inbox/processed/` as an archive.
+
+Processed files accumulate in `inbox/processed/`. Clean that folder whenever you like — it is not tracked by git.
