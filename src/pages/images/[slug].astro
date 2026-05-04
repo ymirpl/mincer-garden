@@ -1,7 +1,7 @@
 ---
 import { render } from 'astro:content';
-import ProseLayout from '../../layouts/ProseLayout.astro';
-import { getItemsByType } from '../../lib/content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getItemsByType, formatLongDate, itemDate } from '../../lib/content';
 
 export async function getStaticPaths() {
   const items = await getItemsByType('image');
@@ -10,9 +10,54 @@ export async function getStaticPaths() {
 
 const { item } = Astro.props;
 const { Content } = await render(item.entry);
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const hasBody = (item.body ?? '').trim().length > 0;
+let sourceHost = '';
+try { sourceHost = new URL(item.externalUrl!).hostname.replace(/^www\./, ''); } catch {}
 ---
 
-<ProseLayout item={item}>
-  {item.image && <p><img src={item.image} alt={item.alt ?? item.title} /></p>}
-  <Content />
-</ProseLayout>
+<BaseLayout title={item.title || 'image'} description={item.alt} view="note" bodyClass="artifact-page">
+  <main class="artifact i-detail" id="content">
+    <div class="wayfinder">
+      <a href={base}>← garden</a>
+      <span class="sep" aria-hidden="true"> / </span>
+      <a href={`${base}images`}>images</a>
+    </div>
+
+    <p class="kind image"><span class="dot" aria-hidden="true"></span>image</p>
+
+    {item.image && (
+      <figure class="plate">
+        <img src={item.image} alt={item.alt ?? ''} />
+      </figure>
+    )}
+
+    <div class="label">
+      {item.caption && <p class="caption">{item.caption}</p>}
+      {item.alt && item.alt !== item.caption && <p class="alt">{item.alt}</p>}
+    </div>
+
+    {hasBody && (
+      <div class="extra">
+        <Content />
+      </div>
+    )}
+
+    <footer class="meta-foot">
+      <div class="tag-row">
+        {item.tags.map((tag) => (
+          <a href={`${base}tags/${tag}`}>#{tag}</a>
+        ))}
+      </div>
+      <div>
+        {item.externalUrl && (
+          <>
+            <a class="src" href={item.externalUrl} rel="noopener" target="_blank">source · {sourceHost}</a>
+            <span class="dotsep">·</span>
+          </>
+        )}
+        <span>{formatLongDate(itemDate(item))}</span>
+      </div>
+    </footer>
+  </main>
+</BaseLayout>

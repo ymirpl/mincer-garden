@@ -11,40 +11,47 @@ interface Props {
 const { item } = Astro.props;
 const layout = noteLayout(item);
 const isNote = item.type === 'note';
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 ---
 
 <BaseLayout title={item.title} description={item.excerpt} view="note" bodyClass={`prose-page ${layout}`}>
   <main class="note-shell" id="content">
     {isNote && (
       <aside class="note-meta" aria-label="note metadata">
-        <div class:list={['status', item.status]}>
-          <StatusMark status={item.status} />
-          {item.status}
-        </div>
         <p>planted {formatLongDate(item.created)}</p>
         <p>tended {formatLongDate(itemDate(item))}</p>
-        {item.tags.length > 0 && <p>{item.tags.join(' · ')}</p>}
       </aside>
     )}
     <article class:list={['prose', layout]}>
-      {isNote && layout === 'long' ? (
-        <header class="note-title">
-          <div class:list={['status inline', item.status]}>
-            <StatusMark status={item.status} />
-            {item.status}
-          </div>
-          <h1>{item.title}</h1>
-          {'subtitle' in item.entry.data && item.entry.data.subtitle && <p>{item.entry.data.subtitle}</p>}
-        </header>
-      ) : (
-        <header class="fragment-title">
-          <h1>{item.title}</h1>
-        </header>
-      )}
+      <div class="prose-head">
+        <div class="wayfinder">
+          <a href={base}>← garden</a>
+          <span class="sep" aria-hidden="true"> / </span>
+          <a href={`${base}list`}>notes</a>
+        </div>
+        <p class:list={['kind', 'note', item.status]}>
+          <span class="dot" aria-hidden="true"></span>note
+          {item.status && (<><span class="kind-sep" aria-hidden="true">·</span><StatusMark status={item.status} />{item.status}</>)}
+        </p>
+        {layout === 'long' ? (
+          <header class="note-title">
+            <h1>{item.title}</h1>
+            {'subtitle' in item.entry.data && item.entry.data.subtitle && <p>{item.entry.data.subtitle}</p>}
+          </header>
+        ) : (
+          <header class="fragment-title">
+            <h1>{item.title}</h1>
+          </header>
+        )}
+      </div>
       <slot />
-      <footer class="prose-foot">
-        tended {formatLongDate(itemDate(item))}
-        {isNote && item.status ? ` · ${item.status}` : ''}
+      <footer class="meta-foot prose-foot">
+        <div class="tag-row">
+          {item.tags.map((tag) => (
+            <a href={`${base}tags/${tag}`}>#{tag}</a>
+          ))}
+        </div>
+        <div>tended {formatLongDate(itemDate(item))}</div>
       </footer>
     </article>
   </main>
