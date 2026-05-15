@@ -37,8 +37,20 @@ const badge = item.type === 'product' ? 'prod' : item.type === 'image' ? 'img' :
 {
   item.type === 'tweet' && (
     <a class="tile t-tweet" href={item.url} style={style}>
+      {item.image && (
+        <div class="tweet-media">
+          <img src={item.image} alt="" loading="lazy" />
+        </div>
+      )}
       <div class="pad">
-        <blockquote>{item.excerpt}</blockquote>
+        {(item.author || item.handle) && (
+          <div class="tweet-byline">
+            {item.author && <span>{item.author}</span>}
+            {item.handle && <span>@{item.handle}</span>}
+          </div>
+        )}
+        <blockquote class:list={{ truncated: item.truncated }}>{item.excerpt}</blockquote>
+        {item.truncated && <div class="tweet-cutoff">captured excerpt... open the full thread</div>}
         <div class="date">{formatMonthDay(itemDate(item))}</div>
         <div class:list={['badge', item.type]}><span class="swatch"></span>{badge}</div>
       </div>

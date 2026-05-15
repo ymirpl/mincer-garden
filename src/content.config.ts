@@ -34,7 +34,12 @@ const tweets = defineCollection({
   loader: glob({ base: './tweets', pattern: '**/*.{md,mdx}' }),
   schema: z.object({
     ...baseFields,
-    source: z.string().url().optional()
+    source: z.string().url().optional(),
+    author: z.string().optional(),
+    handle: z.string().optional(),
+    image: z.string().optional(),
+    source_date: gardenDate,
+    truncated: z.boolean().default(false)
   })
 });
 

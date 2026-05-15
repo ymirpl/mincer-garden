@@ -6,6 +6,6 @@ import { getItemsByType } from '../../lib/content';
 const items = await getItemsByType('tweet');
 ---
 
-<BaseLayout title="tweets list" view="list">
+<BaseLayout title="tweets" view="list">
   <ListIndex items={items} heading="tweets" />
 </BaseLayout>

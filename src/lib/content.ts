@@ -28,6 +28,9 @@ export interface GardenItem {
   alt?: string;
   caption?: string;
   brand?: string;
+  author?: string;
+  handle?: string;
+  truncated?: boolean;
   aspect?: 'square' | 'wide' | 'tall' | 'portrait-tall';
   entry: AnyEntry;
 }
@@ -76,6 +79,12 @@ export function excerpt(value = '', max = 180) {
   const text = plainText(value);
   if (text.length <= max) return text;
   return `${text.slice(0, max).trim()}...`;
+}
+
+function cleanTweetText(value = '') {
+  return plainText(value)
+    .replace(/\shttps?:\/\/t\.co\/\S+$/i, '')
+    .trim();
 }
 
 export function formatMonthDay(date: Date) {
@@ -129,14 +138,18 @@ function normalizeEntry(entry: AnyEntry): GardenItem {
   }
 
   if (entry.collection === 'tweets') {
-    const text = plainText(body);
+    const text = cleanTweetText(body);
     return {
       ...base,
       type: 'tweet',
       title: text,
       excerpt: text,
       url: `${routes.tweet}/${slug}`,
-      externalUrl: data.source
+      externalUrl: data.source,
+      image: assetPath(data.image),
+      author: data.author,
+      handle: data.handle,
+      truncated: Boolean(data.truncated)
     };
   }
 

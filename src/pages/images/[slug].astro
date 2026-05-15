@@ -18,11 +18,9 @@ try { sourceHost = new URL(item.externalUrl!).hostname.replace(/^www\./, ''); } 
 
 <BaseLayout title={item.title || 'image'} description={item.alt} view="note" bodyClass="artifact-page">
   <main class="artifact i-detail" id="content">
-    <div class="wayfinder">
-      <a href={base}>← garden</a>
-      <span class="sep" aria-hidden="true"> / </span>
-      <a href={`${base}images`}>images</a>
-    </div>
+    <nav class="wayfinder" aria-label="breadcrumb">
+      <a href={`${base}images`}>← back to images</a>
+    </nav>
 
     <p class="kind image"><span class="dot" aria-hidden="true"></span>image</p>
 

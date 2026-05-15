@@ -32,7 +32,7 @@ Astro code lives under `src/`. Content schemas are in `src/content.config.ts`.
 
 `note`: `title`, `status: seedling | budding | evergreen`, `tags`, optional `created`, `updated`, `related`, `featured`, `pinned`, `dropcap`, `layout`.
 
-`tweet`: `tags`, optional `created`, `updated`, `source`. Body should be short, original prose.
+`tweet`: `tags`, optional `created`, `updated`, `source`, `author`, `handle`, `image`, `source_date`, `truncated`. Body should be the captured tweet text or short original prose.
 
 `link`: `url`, `title`, `tags`, optional `domain`, `og_image`, `created`, `updated`.
 
@@ -53,6 +53,22 @@ Tags are lowercase kebab-case, flat, and sparse. Reuse existing tags before inve
 ## Wikilinks
 
 Use `[[note-slug]]` or `[[note-slug|display text]]` in prose. `related` frontmatter stores explicit relationships as slug strings.
+
+## Tweets
+
+Tweets can be original short prose or captured external posts. For captured posts, preserve provenance without pretending the text is Marcin's original voice.
+
+Use `tweets/YYYY-MM-DD-<tweet-context>.md` with lowercase kebab-case. The date prefix should normally be the capture date; add `source_date` when the source post date is known and meaningfully different.
+
+For captured external tweets:
+
+1. Put the source URL in `source`.
+2. Add `author` and `handle` when known.
+3. If the capture is incomplete, set `truncated: true` and keep the body to the captured excerpt only.
+4. If there is a screenshot, save it under `public/attachments/tweets/` and reference it as `image: tweets/<filename>`.
+5. Keep tags sparse and factual, usually three tags. Use `[change-me]` only when the user has not provided enough context.
+6. Do not rewrite the tweet's wording unless the user explicitly asks. Formatting fixes are okay when needed to make markdown render correctly.
+7. After creating or editing tweet content, run `npm run build` before committing.
 
 ## Build
 

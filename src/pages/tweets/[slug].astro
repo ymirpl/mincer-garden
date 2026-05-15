@@ -11,30 +11,61 @@ export async function getStaticPaths() {
 const { item } = Astro.props;
 const { Content } = await render(item.entry);
 const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const tweetDate = item.entry.data.source_date ?? itemDate(item);
+const authorInitial = (item.author ?? item.handle ?? 't').slice(0, 1).toLowerCase();
 let sourceHost = '';
 try { sourceHost = new URL(item.externalUrl!).hostname.replace(/^www\./, ''); } catch {}
+const sourceLabel = sourceHost === 'x.com' ? 'open full tweet on x' : `open source on ${sourceHost}`;
 ---
 
 <BaseLayout title={item.excerpt.slice(0, 60)} description={item.excerpt} view="note" bodyClass="artifact-page">
   <main class="artifact t-detail" id="content">
-    <div class="wayfinder">
-      <a href={base}>← garden</a>
-      <span class="sep" aria-hidden="true"> / </span>
-      <a href={`${base}tweets`}>tweets</a>
-    </div>
+    <nav class="wayfinder" aria-label="breadcrumb">
+      <a href={`${base}tweets`}>← back to tweets</a>
+    </nav>
 
-    <p class="kind tweet"><span class="dot" aria-hidden="true"></span>tweet</p>
+    <h1 class="visually-hidden">{item.excerpt}</h1>
 
-    <span class="sprig" aria-hidden="true">
-      <svg viewBox="0 0 28 28" fill="none">
-        <path d="M4 24 C 8 12, 16 6, 24 4 C 24 14, 18 22, 8 24 Z" stroke="currentColor" stroke-width="0.9" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-        <path d="M5 23 L 18 10" stroke="currentColor" stroke-width="0.9" stroke-linecap="round"/>
-      </svg>
-    </span>
+    <article class="tweet-shell" aria-label="captured tweet">
+      <header class="tweet-head">
+        <p class="kind tweet"><span class="dot" aria-hidden="true"></span>tweet capture</p>
 
-    <div class="body">
-      <Content />
-    </div>
+        <div class="tweet-author-block">
+          <span class="tweet-avatar" aria-hidden="true">{authorInitial}</span>
+          <p class="tweet-attribution">
+            <span class="tweet-name">{item.author ?? 'captured tweet'}</span>
+            <span class="tweet-handle">
+              {item.handle ? `@${item.handle}` : sourceHost}
+              <span class="dotsep">·</span>
+              <time datetime={tweetDate.toISOString()}>{formatLongDate(tweetDate)}</time>
+            </span>
+          </p>
+        </div>
+      </header>
+
+      <div class="body">
+        <Content />
+      </div>
+
+      <footer class="tweet-actions" aria-label="tweet source">
+        <span>local excerpt</span>
+        {item.externalUrl && <a href={item.externalUrl} rel="noopener" target="_blank">{sourceLabel}</a>}
+      </footer>
+    </article>
+
+    {item.truncated && (
+      <aside class="tweet-note" aria-label="capture note">
+        <span>garden note</span>
+        <p>this is a captured excerpt, not the full post. the original thread carries the rest.</p>
+      </aside>
+    )}
+
+    {item.image && (
+      <figure class="tweet-image">
+        <img src={item.image} alt="" loading="lazy" />
+        <figcaption>source screenshot kept as provenance, separate from the local excerpt above.</figcaption>
+      </figure>
+    )}
 
     <footer class="meta-foot tweet-foot">
       <div class="tag-row">
@@ -42,15 +73,7 @@ try { sourceHost = new URL(item.externalUrl!).hostname.replace(/^www\./, ''); } 
           <a href={`${base}tags/${tag}`}>#{tag}</a>
         ))}
       </div>
-      <div>
-        {item.externalUrl && (
-          <>
-            <a class="src" href={item.externalUrl} rel="noopener" target="_blank">via {sourceHost}</a>
-            <span class="dotsep">·</span>
-          </>
-        )}
-        <span>{formatLongDate(itemDate(item))}</span>
-      </div>
+      <div>tended {formatLongDate(itemDate(item))}</div>
     </footer>
   </main>
 </BaseLayout>

@@ -6,6 +6,6 @@ import { getItemsByType } from '../../lib/content';
 const items = await getItemsByType('note');
 ---
 
-<BaseLayout title="notes list" view="list">
+<BaseLayout title="notes" view="list">
   <ListIndex items={items} heading="notes" />
 </BaseLayout>

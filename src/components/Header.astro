@@ -5,10 +5,11 @@ interface Props {
 
 const { view = 'mosaic' } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const homeHref = base.replace(/\/$/, '') || '/';
 ---
 
 <header class="site">
-  <a class="wordmark" href={base} aria-label="garden.mincer home">
+  <a class="wordmark" href={homeHref} aria-label="garden.mincer home">
     <span class="sprig" aria-hidden="true">
       <svg class="leaf" width="14" height="14" viewBox="0 0 14 14" fill="none">
         <path d="M2 12 C 4 6, 8 3, 12 2 C 12 7, 9 11, 4 12 Z" />
@@ -18,7 +19,7 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
     garden.mincer
   </a>
   <nav class="views" aria-label="primary">
-    <a href={base} class:list={{ active: view === 'mosaic' }} aria-current={view === 'mosaic' ? 'page' : undefined}>mosaic</a>
+    <a href={homeHref} class:list={{ active: view === 'mosaic' }} aria-current={view === 'mosaic' ? 'page' : undefined}>mosaic</a>
     <span class="sep" aria-hidden="true">·</span>
     <a href={`${base}list`} class:list={{ active: view === 'list' }} aria-current={view === 'list' ? 'page' : undefined}>notes</a>
   </nav>

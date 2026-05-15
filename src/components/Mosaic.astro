@@ -13,6 +13,7 @@ interface Props {
 const { items, currentType = 'all', currentTag, currentStatus, tags = [] } = Astro.props;
 const types = ['all', 'notes', 'tweets', 'links', 'products', 'images'];
 const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const homeHref = base.replace(/\/$/, '') || '/';
 ---
 
 <section class="intro" aria-label="about this garden">
@@ -26,7 +27,7 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
   <div class="group">
     <span class="label">type</span>
     {types.map((type) => (
-      <a href={type === 'all' ? base : `${base}${type}`} class:list={{ on: currentType === type }}>
+      <a href={type === 'all' ? homeHref : `${base}${type}`} class:list={{ on: currentType === type }}>
         {type}
       </a>
     ))}
@@ -36,6 +37,7 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
       <span class="dot" aria-hidden="true">·</span>
       <div class="group">
         <span class="label">tag</span>
+        <a href={homeHref} class:list={{ on: !currentTag }}>all</a>
         {tags.slice(0, 6).map(({ tag }) => (
           <a href={`${base}tags/${tag}`} class:list={{ on: currentTag === tag }}>{tag}</a>
         ))}
@@ -45,6 +47,7 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
   <span class="dot" aria-hidden="true">·</span>
   <div class="group">
     <span class="label">growth</span>
+    <a href={homeHref} class:list={{ on: !currentStatus }}>all</a>
     <a href={`${base}status/seedling`} class:list={{ on: currentStatus === 'seedling' }}>
       <svg class="glyph" viewBox="0 0 12 12" fill="none" aria-hidden="true">
         <path d="M6 10 L 6 5" stroke="#C2604A" stroke-width="0.9" stroke-linecap="round"></path>

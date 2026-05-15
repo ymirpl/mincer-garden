@@ -23,11 +23,9 @@ try {
 
 <BaseLayout title={item.title} description={item.excerpt} view="note" bodyClass="artifact-page">
   <main class="artifact l-detail" id="content">
-    <div class="wayfinder">
-      <a href={base}>← garden</a>
-      <span class="sep" aria-hidden="true"> / </span>
-      <a href={`${base}links`}>links</a>
-    </div>
+    <nav class="wayfinder" aria-label="breadcrumb">
+      <a href={`${base}links`}>← back to links</a>
+    </nav>
 
     <p class="kind link"><span class="dot" aria-hidden="true"></span>link · {item.domain}</p>
     <h1 class="title">{item.title}</h1>

@@ -12,6 +12,8 @@ const { item } = Astro.props;
 const layout = noteLayout(item);
 const isNote = item.type === 'note';
 const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const detailIndexHref = item.type === 'note' ? `${base}list` : `${base}${item.type}s`;
+const detailIndexLabel = item.type === 'note' ? 'notes' : `${item.type}s`;
 ---
 
 <BaseLayout title={item.title} description={item.excerpt} view="note" bodyClass={`prose-page ${layout}`}>
@@ -24,13 +26,11 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
     )}
     <article class:list={['prose', layout]}>
       <div class="prose-head">
-        <div class="wayfinder">
-          <a href={base}>← garden</a>
-          <span class="sep" aria-hidden="true"> / </span>
-          <a href={`${base}list`}>notes</a>
-        </div>
-        <p class:list={['kind', 'note', item.status]}>
-          <span class="dot" aria-hidden="true"></span>note
+        <nav class="wayfinder" aria-label="breadcrumb">
+          <a href={detailIndexHref}>← back to {detailIndexLabel}</a>
+        </nav>
+        <p class:list={['kind', item.type, item.status]}>
+          <span class="dot" aria-hidden="true"></span>{item.type}
           {item.status && (<><span class="kind-sep" aria-hidden="true">·</span><StatusMark status={item.status} />{item.status}</>)}
         </p>
         {layout === 'long' ? (

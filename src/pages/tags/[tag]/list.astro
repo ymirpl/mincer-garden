@@ -12,6 +12,6 @@ const { tag } = Astro.params;
 const items = (await getGardenItems()).filter((item) => item.tags.includes(tag!));
 ---
 
-<BaseLayout title={`tag list: ${tag}`} view="list">
+<BaseLayout title={`tag: ${tag}`} view="list">
   <ListIndex items={items} heading={`tag: ${tag}`} />
 </BaseLayout>
